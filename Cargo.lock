@@ -688,6 +688,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "near-vote"
+version = "0.1.0"
+dependencies = [
+ "near-sdk",
+]
+
+[[package]]
 name = "num-bigint"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1052,13 +1059,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
-]
-
-[[package]]
-name = "starter--near-sdk-rs"
-version = "0.1.0"
-dependencies = [
- "near-sdk",
 ]
 
 [[package]]

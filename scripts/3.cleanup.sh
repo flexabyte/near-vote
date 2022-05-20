@@ -22,11 +22,4 @@ echo ---------------------------------------------------------
 echo
 near delete $CONTRACT $BENEFICIARY
 
-echo
-echo ---------------------------------------------------------
-echo "Step 2: Clean up project folders"
-echo ---------------------------------------------------------
-echo
-yarn clean
-
 exit 0

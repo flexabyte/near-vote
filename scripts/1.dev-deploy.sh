@@ -23,7 +23,8 @@ echo
 
 
 # comment the line below to deploy the other example contract
-near dev-deploy ./target/wasm32-unknown-unknown/release/status_message.wasm
+near dev-deploy -f ./res/near_vote.wasm
+#near deploy --wasmFile res/near_vote.wasm --accountId dummy.lovanft.testnet
 
 echo
 echo

@@ -6,26 +6,58 @@ use std::collections::HashMap;
 metadata! {
 #[near_bindgen]
 #[derive(Default, BorshDeserialize, BorshSerialize)]
-pub struct StatusMessage {
-    records: HashMap<AccountId, String>,
+pub struct Vote {
+    allowedVotes: Vec<String>,
+    userVotes: HashMap<AccountId, String>,
+    totalVotes: HashMap<String, u128>,
 }
 
 #[near_bindgen]
-impl StatusMessage {
-    #[payable]
-    pub fn set_status(&mut self, message: String) {
-        let account_id = env::signer_account_id();
-        log!("{} set_status with message {}", account_id, message);
-        self.records.insert(account_id, message);
+impl Vote {
+
+    pub fn initialize(&mut self) {
+        self.allowedVotes = vec![
+            "Beyond".to_string(), 
+            "Impossible".to_string(), 
+            "Fry's".to_string(), 
+            "Squeaky Bean".to_string()
+        ];
+        
     }
 
-    pub fn get_status(&self, account_id: AccountId) -> Option::<String> {
-        log!("get_status for account_id {}", account_id);
-        self.records.get(&account_id).cloned()
+    #[payable]
+    pub fn add_vote(&mut self, vote: String) {
+        let account_id = env::signer_account_id();
+        if self.userVotes.get(&account_id).is_some() {
+            log!("{} already voted! Cannot vote again!", account_id);
+        } else {
+            if self.allowedVotes.contains(&vote) {
+                log!("{} voting for {}.", account_id, vote);
+                self.userVotes.insert(account_id, vote.clone());
+                let currentVoteCount = self.totalVotes.get(&vote);
+                // First vote ?
+                if currentVoteCount.is_none() {
+                    self.totalVotes.insert(vote, 1);
+                } else {
+                    self.totalVotes.insert(vote, currentVoteCount.unwrap()+1);
+                }
+            } else {
+                log!("{} cannot vote for {}. Not a valid voting option.", 
+                        account_id, vote);
+            }
+        }
     }
-	pub fn helloWorld(&self)->String{
-		return "hello world!".to_string()
-	}
+
+    #[payable]
+    pub fn get_vote(&mut self) -> Option::<String> {
+        let account_id = env::signer_account_id();
+        log!("get_vote for account_id {}", account_id);
+        self.userVotes.get(&account_id).cloned()
+    }
+
+    pub fn get_total_votes(&self, option: String) -> Option::<u128> {
+        self.totalVotes.get(&option).cloned()
+    }
 
 }
 }
@@ -45,24 +77,30 @@ mod tests {
     }
 
     #[test]
-    fn set_get_message() {
+    fn set_get_vote() {
         let context = get_context(false);
         testing_env!(context);
-        let mut contract = StatusMessage::default();
-        contract.set_status("hello".to_string());
-        assert_eq!(get_logs(), vec!["bob_near set_status with message hello"]);
+        let mut contract = Vote::default();
+        contract.initialize();
+        contract.add_vote("Beyond".to_string());
+        assert_eq!(get_logs(), vec!["bob_near voting for Beyond."]);
         let context = get_context(true);
         testing_env!(context);
-        assert_eq!("hello".to_string(), contract.get_status("bob_near".parse().unwrap()).unwrap());
-        assert_eq!(get_logs(), vec!["get_status for account_id bob_near"])
+        let vote = contract.get_vote();
+        assert_eq!("Beyond".to_string(), vote.unwrap());
+        assert_eq!(get_logs(), vec!["get_vote for account_id bob_near"]);
+        let total_votes = contract.get_total_votes("Beyond".to_string());
+        assert_eq!(1, total_votes.unwrap());
+        assert_eq!(get_logs(), vec!["get_vote for account_id bob_near"]);
     }
 
     #[test]
-    fn get_nonexistent_message() {
-        let context = get_context(true);
+    fn add_invalid_vote() {
+        let context = get_context(false);
         testing_env!(context);
-        let contract = StatusMessage::default();
-        assert_eq!(None, contract.get_status("francis.near".parse().unwrap()));
-        assert_eq!(get_logs(), vec!["get_status for account_id francis.near"])
+        let mut contract = Vote::default();
+        contract.initialize();
+        contract.add_vote("FutureFarm".to_string());
+        assert_eq!(get_logs(), vec!["bob_near cannot vote for FutureFarm. Not a valid voting option."]);
     }
 }
