@@ -1,6 +1,6 @@
-# `near-sdk-rs` Starter Kit
+# Near Vote
 
-This is a good project to use as a starting point for your Rust project.
+This is my submission for the Near Certified Developer project, a private, trustless voting contract.
 
 ## Samples
 

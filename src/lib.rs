@@ -15,6 +15,7 @@ pub struct Vote {
 #[near_bindgen]
 impl Vote {
 
+    // These are hardcoded to prevent any option tampering.
     pub fn initialize(&mut self) {
         self.allowedVotes = vec![
             "Beyond".to_string(), 
@@ -22,9 +23,13 @@ impl Vote {
             "Fry's".to_string(), 
             "Squeaky Bean".to_string()
         ];
-        
     }
 
+    pub fn get_options(&self) -> Vec<String> {
+        self.allowedVotes.clone()
+    }
+
+    /// Allows a user to vote on a specific option.
     #[payable]
     pub fn add_vote(&mut self, vote: String) {
         let account_id = env::signer_account_id();
@@ -83,15 +88,25 @@ mod tests {
         let mut contract = Vote::default();
         contract.initialize();
         contract.add_vote("Beyond".to_string());
-        assert_eq!(get_logs(), vec!["bob_near voting for Beyond."]);
         let context = get_context(true);
-        testing_env!(context);
         let vote = contract.get_vote();
         assert_eq!("Beyond".to_string(), vote.unwrap());
-        assert_eq!(get_logs(), vec!["get_vote for account_id bob_near"]);
         let total_votes = contract.get_total_votes("Beyond".to_string());
         assert_eq!(1, total_votes.unwrap());
-        assert_eq!(get_logs(), vec!["get_vote for account_id bob_near"]);
+        assert_eq!(get_logs(), vec!["bob_near voting for Beyond.", "get_vote for account_id bob_near"])
+    }
+
+    #[test]
+    fn get_options() {
+        let context = get_context(false);
+        testing_env!(context);
+        let mut contract = Vote::default();
+        contract.initialize();
+        let options = contract.get_options();
+        assert_eq!(options[0], "Beyond");
+        assert_eq!(options[1], "Impossible");
+        assert_eq!(options[2], "Fry's");
+        assert_eq!(options[3], "Squeaky Bean");
     }
 
     #[test]
