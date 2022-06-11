@@ -18,19 +18,14 @@ pub struct Vote {
 impl Vote {
 
     // These are hardcoded to prevent any option tampering.
-    pub fn initialize(&mut self, endTimestamp: u64) {
+    pub fn initialize(&mut self, allowedOptions: Vec<String>, endTimestamp: u64) {
         assert!(!self.voteStarted, "Vote is already ongoing.");
-        self.allowedVotes = vec![
-            "Beyond".to_string(), 
-            "Impossible".to_string(), 
-            "Fry's".to_string(), 
-            "Squeaky Bean".to_string()
-        ];
+        self.allowed_votes = allowedOptions;
         self.endTimestamp = endTimestamp;
         self.voteStarted = true;
     }
 
-    pub fn get_options(&self) -> Vec<String> {
+    pub fn get_options(&self) -> Vec::<String> {
         self.allowedVotes.clone()
     }
 
@@ -110,7 +105,13 @@ mod tests {
         let context = get_context(false);
         testing_env!(context);
         let mut contract = Vote::default();
-        contract.initialize(1653239512000000000);
+        let allowed_votes = vec![
+            "Beyond".to_string(), 
+            "Impossible".to_string(), 
+            "Fry's".to_string(), 
+            "Squeaky Bean".to_string()
+        ];
+        contract.initialize(allowed_votes, 1653239512000000000);
         contract.add_vote("Beyond".to_string());
         let context = get_context(true);
         let vote = contract.get_vote();
@@ -122,7 +123,13 @@ mod tests {
         let context = get_context(false);
         testing_env!(context);
         let mut contract = Vote::default();
-        contract.initialize(1653239512000000000);
+        let allowed_votes = vec![
+            "Beyond".to_string(), 
+            "Impossible".to_string(), 
+            "Fry's".to_string(), 
+            "Squeaky Bean".to_string()
+        ];
+        contract.initialize(allowed_votes, 1653239512000000000);
         let options = contract.get_options();
         assert_eq!(options[0], "Beyond");
         assert_eq!(options[1], "Impossible");
@@ -135,7 +142,13 @@ mod tests {
         let context = get_context(false);
         testing_env!(context);
         let mut contract = Vote::default();
-        contract.initialize(1653239512000000000);
+        let allowed_votes = vec![
+            "Beyond".to_string(), 
+            "Impossible".to_string(), 
+            "Fry's".to_string(), 
+            "Squeaky Bean".to_string()
+        ];
+        contract.initialize(allowed_votes, 1653239512000000000);
         contract.add_vote("FutureFarm".to_string());
         assert_eq!(get_logs(), vec!["bob_near cannot vote for FutureFarm. Not a valid voting option."]);
     }
@@ -146,8 +159,14 @@ mod tests {
         let context = get_context(false);
         testing_env!(context);
         let mut contract = Vote::default();
-        contract.initialize(1653239512000000000);
-        contract.initialize(9999999999999999999);
+        let allowed_votes = vec![
+            "Beyond".to_string(), 
+            "Impossible".to_string(), 
+            "Fry's".to_string(), 
+            "Squeaky Bean".to_string()
+        ];
+        contract.initialize(allowed_votes.clone(), 1653239512000000000);
+        contract.initialize(allowed_votes, 9999999999999999999);
     }
 
     #[test]
@@ -155,7 +174,13 @@ mod tests {
         let context = get_context(false);
         testing_env!(context);
         let mut contract = Vote::default();
-        contract.initialize(1653239512000000000);
+        let allowed_votes = vec![
+            "Beyond".to_string(), 
+            "Impossible".to_string(), 
+            "Fry's".to_string(), 
+            "Squeaky Bean".to_string()
+        ];
+        contract.initialize(allowed_votes, 1653239512000000000);
         contract.add_vote("Beyond".to_string());
         let context = get_final_context(false);
         testing_env!(context);
@@ -168,7 +193,13 @@ mod tests {
         let context = get_context(false);
         testing_env!(context);
         let mut contract = Vote::default();
-        contract.initialize(1653239512000000000);
+        let allowed_votes = vec![
+            "Beyond".to_string(), 
+            "Impossible".to_string(), 
+            "Fry's".to_string(), 
+            "Squeaky Bean".to_string()
+        ];
+        contract.initialize(allowed_votes, 1653239512000000000);
         let options = contract.get_options();
         // 100 users, 25 votes for each option.
         for i in 0..100 {
