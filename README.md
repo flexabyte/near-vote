@@ -35,3 +35,5 @@ You will also need to set your "ACCOUNT" environment variable.
 2. run `. ./scripts/1.dev-deploy.sh` to deploy to testnet. Remember to set $CONTRACT environment variable.
 3. run `./scripts/2.use-contract.sh` to interact with the contract.
 4. run `./scripts/3.cleanup.sh` to delete the contract.
+
+Created with love by lovathom.near ❤️
