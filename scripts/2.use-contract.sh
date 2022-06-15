@@ -34,7 +34,7 @@ echo
 # --> FunctionCallError(HostError(ProhibitedInView { method_name: "storage_write" }))
 # near view $CONTRACT write '{"key": "some-key", "value":"some value"}'
 echo "Getting all voting options"
-near view $CONTRACT get_options '{"option":"Beyond"}' --accountId $ACCOUNT
+near view $CONTRACT get_options --accountId $ACCOUNT
 echo "Voting for 'Beyond'"
 near call $CONTRACT add_vote '{"vote":"Beyond"}' --accountId $ACCOUNT
 echo "Getting what I voted for... it should be 'Beyond'"

@@ -20,7 +20,7 @@ impl Vote {
     // These are hardcoded to prevent any option tampering.
     pub fn initialize(&mut self, allowedOptions: Vec<String>, endTimestamp: u64) {
         assert!(!self.voteStarted, "Vote is already ongoing.");
-        self.allowed_votes = allowedOptions;
+        self.allowedVotes = allowedOptions;
         self.endTimestamp = endTimestamp;
         self.voteStarted = true;
     }
